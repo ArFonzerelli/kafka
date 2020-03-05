@@ -3,18 +3,18 @@ package ru.test.kafka_test.kafka.health;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.kafka.core.KafkaAdmin;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Configuration
 public class KafkaHealthIndicatorConfig {
 
     @Bean
-    @Scope("prototype")
     public KafkaHealthIndicator kafkaHealthIndicator(KafkaAdmin kafkaAdmin, Set<String> topics) {
-        return new KafkaHealthIndicator(kafkaAdmin, topics, 10000);
+        return new KafkaHealthIndicator(AdminClient.create(kafkaAdmin.getConfig()), topics, 10000);
     }
 
     @Bean
