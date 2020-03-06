@@ -1,43 +1,28 @@
 package ru.test.kafka_test.controller;
 
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.test.kafka_test.kafka.consumer.KafkaConsumer;
-import ru.test.kafka_test.kafka.producer.KafkaProducer;
 
-import java.util.Random;
+import java.util.Set;
 
 @RestController
 public class KafkaTestController {
 
     @Autowired
-    private KafkaProducer kafkaProducer;
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    private KafkaConsumer kafkaConsumer;
+    private Set<String> topics;
 
     @GetMapping("/send")
     public String sendMessage() throws InterruptedException {
-        Thread.sleep(500);
-        String message = "vasya molodec " + Math.random();
-        kafkaProducer.sendMessage(message);
+        for (String topic : topics) {
+            kafkaTemplate.send(topic, "message");
+        }
 
-        Thread.sleep(500);
-
-        String receivedMessage = kafkaConsumer.getMessage();
-
-        return "Message  [" + message + "] sent" + "\n " +
-                "Message [" + receivedMessage + "] received";
+        return "sent";
     }
-
-    @GetMapping("/donothing")
-    public String doNothing(){
-        System.out.println("Nothing done");
-        return "Nothing done";
-    }
-
-
 
 }
